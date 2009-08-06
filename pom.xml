@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.eclipse.jetty</groupId>
+  <version>1.0-SNAPSHOT</version>
+  <artifactId>jetty-setuid</artifactId>
+  <name>Jetty :: SetUID</name>
+  <description>SetUID Support for dropping privileges on startup</description>
+  <build>
+    <defaultGoal>install</defaultGoal>
+     <plugins>
+       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>net.java.dev.jna</groupId>
+                  <artifactId>jna</artifactId>
+                  <version>3.2.2</version>
+                  <type>jar</type>
+                  <outputDirectory>dist/lib/ext/${project.artifactId}</outputDirectory>
+                  <overWrite>false</overWrite>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/dist</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copyfiles</id>
+            <phase>install</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <copy failonerror="false" file="target/${project.artifactId}-${project.version}.${project.packaging}" todir="dist/lib/ext" />
+                <copy failonerror="false" file="etc/jetty-setuid.xml" todir="dist/etc" />
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <delete failonerror="false" file="dist/lib/ext/${project.artifactId}-${project.version}.${project.packaging}"/>
+                <delete failonerror="false" dir="dist/lib/${project.artifactId}" />
+                <delete failonerror="false" file="dist/etc/jetty-setuid.xml"/>
+              </tasks>
+            </configuration>
+          </execution>		  
+        </executions>
+      </plugin>
+     </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>7.0.0.RC3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>7.0.0.RC3-SNAPSHOT</version>
+    </dependency>  
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.2.2</version>
+    </dependency>  
+  </dependencies>
+  <repositories>
+    <repository>
+      <id>sonatype-jetty-repo</id>
+      <name>Sonatype Jetty Repo</name>
+      <url>http://oss.sonatype.org/content/groups/jetty</url>
+    </repository>
+    <repository>
+      <id>java-net-repo</id>
+      <name>Java.net Repo</name>
+      <url>http://download.java.net/maven/2</url>
+    </repository>
+  </repositories>
+</project>
